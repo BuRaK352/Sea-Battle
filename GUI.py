@@ -46,7 +46,7 @@ def draw_ship(player, left=0, top=0):
     for ship in player.ships:
         x = left + ship.col * SQ_SIZE+INDENT
         y = top + ship.row * SQ_SIZE+INDENT
-        if ship.orientation == 'horizontal':
+        if ship.orientation == 'h':
             width = ship.size * SQ_SIZE-2*INDENT
             height = SQ_SIZE-2*INDENT
         else:
@@ -75,14 +75,14 @@ while animating:
             animating = False
 
         # user clicks on mouse
-        if event.type == pygame.MOUSEBUTTONDOWN:
+        if event.type == pygame.MOUSEBUTTONDOWN and not game.over:
            x,y = pygame.mouse.get_pos()
-           if not game.over and game.player1_turn and x < SQ_SIZE * 10 and y < SQ_SIZE * 10:
+           if game.player1_turn and x < SQ_SIZE * 10 and y < SQ_SIZE * 10:
                row = y//SQ_SIZE
                col = x//SQ_SIZE
                index = row * 10 + col
                game.make_move(index)
-           elif not game.over and not game.player1_turn and x > WIDTH - SQ_SIZE * 10 and y > SQ_SIZE * 10 + V_MARGIN:
+           elif not game.player1_turn and x > WIDTH - SQ_SIZE * 10 and y > SQ_SIZE * 10 + V_MARGIN:
                row = (y- SQ_SIZE*10 - V_MARGIN)//SQ_SIZE
                col = (x - SQ_SIZE * 10 - H_MARGIN) // SQ_SIZE
                index = row * 10 + col
@@ -123,7 +123,10 @@ while animating:
 
         #Computer moves
         if not game.over and game.computer_turn:
-            game.random_ai()
+            if game.player1_turn:
+                game.basic_ai()
+            else:
+                game.basic_ai()
 
 
         # game over message
@@ -133,6 +136,7 @@ while animating:
             SCREEN.blit(textbox, (WIDTH//2-240, HEIGHT//2-50))
 
         #update screen
-        pygame.time.wait(100)
+        pygame.time.wait(0)
         pygame.display.flip()
+
 
