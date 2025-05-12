@@ -1,6 +1,6 @@
 from engine import Game
 from matplotlib import pyplot
-n_games = 2000
+n_games = 1
 n_shots =[]
 n_wins1=0
 n_wins2=0
@@ -8,7 +8,7 @@ for i in range(n_games):
     game = Game(human1=False, human2=False)
     while not game.over:
         if game.player1_turn:
-            game.basic_ai()
+            game.random_ai()
         else:
             game.basic_ai()
     n_shots.append(game.n_shots)
