@@ -7,7 +7,7 @@ from engine import Game
 pygame.init()
 pygame.font.init()
 pygame.display.set_caption("Battleship AI")
-myfont = pygame.font.SysFont("freestanding", 100)
+myfont = pygame.font.SysFont("fresansttf", 100)
 
 #global variables
 SQ_SIZE = 30
@@ -15,7 +15,7 @@ H_MARGIN = SQ_SIZE * 4
 V_MARGIN = SQ_SIZE
 WIDTH, HEIGHT = SQ_SIZE * 10 * 2 + H_MARGIN, SQ_SIZE * 10 * 2 + V_MARGIN
 INDENT =10
-HUMAN1 = True
+HUMAN1 = False
 HUMAN2 = False
 
 SCREEN=pygame.display.set_mode((WIDTH,HEIGHT))
@@ -138,3 +138,5 @@ while animating:
         #update screen
         pygame.time.wait(0)
         pygame.display.flip()
+
+
