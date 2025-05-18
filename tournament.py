@@ -1,6 +1,7 @@
 from engine import Game
 from matplotlib import pyplot
-n_games = 1
+import pygame
+n_games = 100
 n_shots =[]
 n_wins1=0
 n_wins2=0
@@ -16,6 +17,7 @@ for i in range(n_games):
         n_wins1 += 1
     elif game.result == 2:
         n_wins2 += 1
+    pygame.time.wait(1000)
 
 print(n_wins1)
 print(n_wins2)
