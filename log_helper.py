@@ -1,3 +1,4 @@
+# log_helper.py
 import json
 import uuid
 from datetime import datetime
@@ -5,21 +6,48 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).parent
 LOGS_DIR = BASE_DIR / "logs"
-USER_ID_FILE = BASE_DIR / "user_id.txt"
+USER_INFO_FILE = BASE_DIR / "user_info.json"
 
-if not USER_ID_FILE.exists():
-    user_id = uuid.uuid4().hex[:10]
-    USER_ID_FILE.write_text(user_id)
-else:
-    user_id = USER_ID_FILE.read_text().strip()
+# Kullanıcı verisi yükleme/kaydetme
+def load_user_info():
+    if USER_INFO_FILE.exists():
+        with open(USER_INFO_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return {}
 
-USER_LOG_DIR = LOGS_DIR / user_id
-USER_LOG_DIR.mkdir(parents=True, exist_ok=True)
+def save_user_info(info):
+    with open(USER_INFO_FILE, "w", encoding="utf-8") as f:
+        json.dump(info, f, indent=2)
+
+user_info = load_user_info()
+username = None
+user_id = None
+
+def set_username(name):
+    global username, user_id, user_info
+
+    username = name.strip()
+
+    if username in user_info:
+        user_id = user_info[username]
+    else:
+        user_id = uuid.uuid4().hex[:10]
+        user_info[username] = user_id
+        save_user_info(user_info)
+
+    # Kişisel log klasörü
+    USER_LOG_DIR = LOGS_DIR / user_id
+    USER_LOG_DIR.mkdir(parents=True, exist_ok=True)
+    return user_id
+
+def get_username():
+    return username
 
 def create_log_data(player1_ships, player2_ships):
     log_data = {
         "game_id": datetime.now().strftime("%Y_%m_%d_%Hh%Mm%Ss%Ms") + f"{user_id}",
         "user_id": user_id,
+        "username": username,
         "start_time": datetime.now().isoformat(),
         "player1_ships": [{"size": ship.size, "cells": ship.indexes} for ship in player1_ships],
         "player2_ships": [{"size": ship.size, "cells": ship.indexes} for ship in player2_ships],
@@ -44,7 +72,7 @@ def add_move(log_data, turn, player, index, result, ship_size=None):
 
     log_data["moves"].append(move)
 
-    if result == "hit" or result == "sunk":
+    if result in ("hit", "sunk"):
         log_data["hit_count"][str(player)] += 1
     elif result == "miss":
         log_data["miss_count"][str(player)] += 1
@@ -55,7 +83,10 @@ def finalize_log(log_data, winner):
     log_data["total_turns"] = len(log_data["moves"])
 
     file_name = log_data["game_id"] + ".json"
-    with open(USER_LOG_DIR / file_name, "w", encoding="utf-8") as f:
+    user_log_dir = LOGS_DIR / log_data["username"]
+    user_log_dir.mkdir(parents=True, exist_ok=True)
+
+    with open(user_log_dir / file_name, "w", encoding="utf-8") as f:
         json.dump(log_data, f, indent=2)
 
-    print(f"Log kaydedildi: {file_name}")
+    print(f"Log kaydedildi: {file_name}")

@@ -3,8 +3,13 @@
 from operator import index
 import pygame
 from engine import Game,Ship
+from log_helper import set_username
+from login import login_screen
+
 import sys
 
+username = login_screen()
+set_username(username)
 pygame.init()
 pygame.font.init()
 pygame.display.set_caption("Battleship AI")
@@ -39,6 +44,7 @@ H_MARGIN = SQ_SIZE + 100
 V_MARGIN = SQ_SIZE
 WIDTH, HEIGHT = SQ_SIZE * 10 * 2 + H_MARGIN, SQ_SIZE * 10 * 2 + V_MARGIN
 INDENT =10
+LOGIN = False
 
 
 
@@ -228,41 +234,49 @@ while running:
     #execution
     if not pausing:
         #draw background
-        SCREEN.fill(GRAY)
+        if LOGIN == False:
+            username = login_screen()
+            print("Oyuncu adı:", username)
+            LOGIN = True
+        else:
 
-        #draw search grids
-        draw_grid(game.player1, search = True)
-        draw_grid(game.player2, search = True, left=(WIDTH-H_MARGIN)//2 + H_MARGIN, top=(HEIGHT-V_MARGIN)//2 + V_MARGIN)
+            SCREEN.fill(GRAY)
 
-        #draw position grids
-        draw_grid(game.player1, top=(HEIGHT-V_MARGIN)//2 + V_MARGIN)
-        draw_grid(game.player2, left=(WIDTH-H_MARGIN)//2 + H_MARGIN)
+            # draw search grids
+            draw_grid(game.player1, search=True)
+            draw_grid(game.player2, search=True, left=(WIDTH - H_MARGIN) // 2 + H_MARGIN,
+                      top=(HEIGHT - V_MARGIN) // 2 + V_MARGIN)
 
-        draw_a_line()
+            # draw position grids
+            draw_grid(game.player1, top=(HEIGHT - V_MARGIN) // 2 + V_MARGIN)
+            draw_grid(game.player2, left=(WIDTH - H_MARGIN) // 2 + H_MARGIN)
 
-        #draw ships onto position grids
-        draw_ship(game.player1,top=(HEIGHT-V_MARGIN)//2 + V_MARGIN)
-        draw_ship(game.player2, left=(WIDTH-H_MARGIN)//2 + H_MARGIN)
+            draw_a_line()
 
-        #Draw stats panel
-        draw_statistics_panel(game)
+            # draw ships onto position grids
+            draw_ship(game.player1, top=(HEIGHT - V_MARGIN) // 2 + V_MARGIN)
+            draw_ship(game.player2, left=(WIDTH - H_MARGIN) // 2 + H_MARGIN)
 
-        #Computer moves
-        if not game.over and game.computer_turn:
-            if game.player1_turn:
-                game.basic_ai()
-            else:
-                game.basic_ai()
+            # Draw stats panel
+            draw_statistics_panel(game)
 
-        # game over message
-        if game.over:
-            text = "Player" + str(game.result) + " wins!"
-            textbox = myfont.render(text, False, GRAY, WHITE)
-            SCREEN.blit(textbox, (WIDTH//2-240, HEIGHT//2-50))
+            # Computer moves
+            if not game.over and game.computer_turn:
+                if game.player1_turn:
+                    game.basic_ai()
+                else:
+                    game.basic_ai()
 
-        #update screen
+            # game over message
+            if game.over:
+                text = "Player" + str(game.result) + " wins!"
+                textbox = myfont.render(text, False, GRAY, WHITE)
+                SCREEN.blit(textbox, (WIDTH // 2 - 240, HEIGHT // 2 - 50))
+
+        # update screen
         pygame.time.wait(100)
         pygame.display.flip()
+
 
 
 
