@@ -1,0 +1,1034 @@
+{
+  "game_id": "2025_05_18_18h31m04s31se980d5358b",
+  "user_id": "e980d5358b",
+  "start_time": "2025-05-18T18:31:04.583592",
+  "player1_ships": [
+    {
+      "size": 5,
+      "cells": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "size": 4,
+      "cells": [
+        83,
+        84,
+        85,
+        86
+      ]
+    },
+    {
+      "size": 3,
+      "cells": [
+        66,
+        67,
+        68
+      ]
+    },
+    {
+      "size": 3,
+      "cells": [
+        75,
+        76,
+        77
+      ]
+    },
+    {
+      "size": 2,
+      "cells": [
+        18,
+        19
+      ]
+    }
+  ],
+  "player2_ships": [
+    {
+      "size": 5,
+      "cells": [
+        38,
+        48,
+        58,
+        68,
+        78
+      ]
+    },
+    {
+      "size": 4,
+      "cells": [
+        9,
+        19,
+        29,
+        39
+      ]
+    },
+    {
+      "size": 3,
+      "cells": [
+        63,
+        73,
+        83
+      ]
+    },
+    {
+      "size": 3,
+      "cells": [
+        96,
+        97,
+        98
+      ]
+    },
+    {
+      "size": 2,
+      "cells": [
+        75,
+        85
+      ]
+    }
+  ],
+  "moves": [
+    {
+      "turn": 1,
+      "player": 1,
+      "cell": {
+        "row": 9,
+        "col": 5
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 2,
+      "player": 2,
+      "cell": {
+        "row": 3,
+        "col": 1
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 3,
+      "player": 1,
+      "cell": {
+        "row": 7,
+        "col": 9
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 4,
+      "player": 2,
+      "cell": {
+        "row": 2,
+        "col": 0
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 5,
+      "player": 1,
+      "cell": {
+        "row": 0,
+        "col": 8
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 6,
+      "player": 2,
+      "cell": {
+        "row": 9,
+        "col": 5
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 7,
+      "player": 1,
+      "cell": {
+        "row": 4,
+        "col": 8
+      },
+      "result": "hit"
+    },
+    {
+      "turn": 8,
+      "player": 1,
+      "cell": {
+        "row": 5,
+        "col": 8
+      },
+      "result": "hit"
+    },
+    {
+      "turn": 9,
+      "player": 1,
+      "cell": {
+        "row": 3,
+        "col": 8
+      },
+      "result": "hit"
+    },
+    {
+      "turn": 10,
+      "player": 1,
+      "cell": {
+        "row": 2,
+        "col": 8
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 11,
+      "player": 2,
+      "cell": {
+        "row": 4,
+        "col": 2
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 12,
+      "player": 1,
+      "cell": {
+        "row": 6,
+        "col": 8
+      },
+      "result": "hit"
+    },
+    {
+      "turn": 13,
+      "player": 1,
+      "cell": {
+        "row": 7,
+        "col": 8
+      },
+      "result": "hit"
+    },
+    {
+      "turn": 14,
+      "player": 1,
+      "cell": {
+        "row": 0,
+        "col": 0
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 15,
+      "player": 2,
+      "cell": {
+        "row": 7,
+        "col": 3
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 16,
+      "player": 1,
+      "cell": {
+        "row": 6,
+        "col": 2
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 17,
+      "player": 2,
+      "cell": {
+        "row": 6,
+        "col": 6
+      },
+      "result": "hit"
+    },
+    {
+      "turn": 18,
+      "player": 2,
+      "cell": {
+        "row": 6,
+        "col": 5
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 19,
+      "player": 1,
+      "cell": {
+        "row": 9,
+        "col": 1
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 20,
+      "player": 2,
+      "cell": {
+        "row": 7,
+        "col": 6
+      },
+      "result": "hit"
+    },
+    {
+      "turn": 21,
+      "player": 2,
+      "cell": {
+        "row": 5,
+        "col": 6
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 22,
+      "player": 1,
+      "cell": {
+        "row": 5,
+        "col": 9
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 23,
+      "player": 2,
+      "cell": {
+        "row": 8,
+        "col": 6
+      },
+      "result": "hit"
+    },
+    {
+      "turn": 24,
+      "player": 2,
+      "cell": {
+        "row": 9,
+        "col": 6
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 25,
+      "player": 1,
+      "cell": {
+        "row": 2,
+        "col": 2
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 26,
+      "player": 2,
+      "cell": {
+        "row": 6,
+        "col": 7
+      },
+      "result": "hit"
+    },
+    {
+      "turn": 27,
+      "player": 2,
+      "cell": {
+        "row": 6,
+        "col": 8
+      },
+      "result": "hit"
+    },
+    {
+      "turn": 28,
+      "player": 2,
+      "cell": {
+        "row": 7,
+        "col": 7
+      },
+      "result": "hit"
+    },
+    {
+      "turn": 29,
+      "player": 2,
+      "cell": {
+        "row": 7,
+        "col": 5
+      },
+      "result": "hit"
+    },
+    {
+      "turn": 30,
+      "player": 2,
+      "cell": {
+        "row": 8,
+        "col": 5
+      },
+      "result": "hit"
+    },
+    {
+      "turn": 31,
+      "player": 2,
+      "cell": {
+        "row": 8,
+        "col": 4
+      },
+      "result": "hit"
+    },
+    {
+      "turn": 32,
+      "player": 2,
+      "cell": {
+        "row": 8,
+        "col": 3
+      },
+      "result": "hit"
+    },
+    {
+      "turn": 33,
+      "player": 2,
+      "cell": {
+        "row": 4,
+        "col": 6
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 34,
+      "player": 1,
+      "cell": {
+        "row": 9,
+        "col": 3
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 35,
+      "player": 2,
+      "cell": {
+        "row": 5,
+        "col": 9
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 36,
+      "player": 1,
+      "cell": {
+        "row": 7,
+        "col": 3
+      },
+      "result": "hit"
+    },
+    {
+      "turn": 37,
+      "player": 1,
+      "cell": {
+        "row": 7,
+        "col": 4
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 38,
+      "player": 2,
+      "cell": {
+        "row": 6,
+        "col": 4
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 39,
+      "player": 1,
+      "cell": {
+        "row": 7,
+        "col": 2
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 40,
+      "player": 2,
+      "cell": {
+        "row": 1,
+        "col": 5
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 41,
+      "player": 1,
+      "cell": {
+        "row": 6,
+        "col": 3
+      },
+      "result": "hit"
+    },
+    {
+      "turn": 42,
+      "player": 1,
+      "cell": {
+        "row": 5,
+        "col": 3
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 43,
+      "player": 2,
+      "cell": {
+        "row": 6,
+        "col": 2
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 44,
+      "player": 1,
+      "cell": {
+        "row": 8,
+        "col": 3
+      },
+      "result": "hit"
+    },
+    {
+      "turn": 45,
+      "player": 1,
+      "cell": {
+        "row": 3,
+        "col": 1
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 46,
+      "player": 2,
+      "cell": {
+        "row": 9,
+        "col": 9
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 47,
+      "player": 1,
+      "cell": {
+        "row": 4,
+        "col": 2
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 48,
+      "player": 2,
+      "cell": {
+        "row": 9,
+        "col": 7
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 49,
+      "player": 1,
+      "cell": {
+        "row": 8,
+        "col": 0
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 50,
+      "player": 2,
+      "cell": {
+        "row": 3,
+        "col": 5
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 51,
+      "player": 1,
+      "cell": {
+        "row": 9,
+        "col": 7
+      },
+      "result": "hit"
+    },
+    {
+      "turn": 52,
+      "player": 1,
+      "cell": {
+        "row": 9,
+        "col": 6
+      },
+      "result": "hit"
+    },
+    {
+      "turn": 53,
+      "player": 1,
+      "cell": {
+        "row": 9,
+        "col": 8
+      },
+      "result": "hit"
+    },
+    {
+      "turn": 54,
+      "player": 1,
+      "cell": {
+        "row": 8,
+        "col": 8
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 55,
+      "player": 2,
+      "cell": {
+        "row": 4,
+        "col": 8
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 56,
+      "player": 1,
+      "cell": {
+        "row": 2,
+        "col": 4
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 57,
+      "player": 2,
+      "cell": {
+        "row": 3,
+        "col": 3
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 58,
+      "player": 1,
+      "cell": {
+        "row": 3,
+        "col": 7
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 59,
+      "player": 2,
+      "cell": {
+        "row": 1,
+        "col": 3
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 60,
+      "player": 1,
+      "cell": {
+        "row": 2,
+        "col": 0
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 61,
+      "player": 2,
+      "cell": {
+        "row": 8,
+        "col": 2
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 62,
+      "player": 1,
+      "cell": {
+        "row": 2,
+        "col": 6
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 63,
+      "player": 2,
+      "cell": {
+        "row": 5,
+        "col": 7
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 64,
+      "player": 1,
+      "cell": {
+        "row": 3,
+        "col": 9
+      },
+      "result": "hit"
+    },
+    {
+      "turn": 65,
+      "player": 1,
+      "cell": {
+        "row": 4,
+        "col": 0
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 66,
+      "player": 2,
+      "cell": {
+        "row": 2,
+        "col": 8
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 67,
+      "player": 1,
+      "cell": {
+        "row": 2,
+        "col": 9
+      },
+      "result": "hit"
+    },
+    {
+      "turn": 68,
+      "player": 1,
+      "cell": {
+        "row": 1,
+        "col": 9
+      },
+      "result": "hit"
+    },
+    {
+      "turn": 69,
+      "player": 1,
+      "cell": {
+        "row": 0,
+        "col": 9
+      },
+      "result": "hit"
+    },
+    {
+      "turn": 70,
+      "player": 1,
+      "cell": {
+        "row": 7,
+        "col": 7
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 71,
+      "player": 2,
+      "cell": {
+        "row": 5,
+        "col": 3
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 72,
+      "player": 1,
+      "cell": {
+        "row": 5,
+        "col": 5
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 73,
+      "player": 2,
+      "cell": {
+        "row": 0,
+        "col": 8
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 74,
+      "player": 1,
+      "cell": {
+        "row": 0,
+        "col": 2
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 75,
+      "player": 2,
+      "cell": {
+        "row": 2,
+        "col": 2
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 76,
+      "player": 1,
+      "cell": {
+        "row": 1,
+        "col": 1
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 77,
+      "player": 2,
+      "cell": {
+        "row": 0,
+        "col": 6
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 78,
+      "player": 1,
+      "cell": {
+        "row": 5,
+        "col": 7
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 79,
+      "player": 2,
+      "cell": {
+        "row": 0,
+        "col": 2
+      },
+      "result": "hit"
+    },
+    {
+      "turn": 80,
+      "player": 2,
+      "cell": {
+        "row": 0,
+        "col": 1
+      },
+      "result": "hit"
+    },
+    {
+      "turn": 81,
+      "player": 2,
+      "cell": {
+        "row": 0,
+        "col": 0
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 82,
+      "player": 1,
+      "cell": {
+        "row": 8,
+        "col": 6
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 83,
+      "player": 2,
+      "cell": {
+        "row": 0,
+        "col": 3
+      },
+      "result": "hit"
+    },
+    {
+      "turn": 84,
+      "player": 2,
+      "cell": {
+        "row": 0,
+        "col": 4
+      },
+      "result": "hit"
+    },
+    {
+      "turn": 85,
+      "player": 2,
+      "cell": {
+        "row": 0,
+        "col": 5
+      },
+      "result": "hit"
+    },
+    {
+      "turn": 86,
+      "player": 2,
+      "cell": {
+        "row": 7,
+        "col": 1
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 87,
+      "player": 1,
+      "cell": {
+        "row": 9,
+        "col": 9
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 88,
+      "player": 2,
+      "cell": {
+        "row": 1,
+        "col": 1
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 89,
+      "player": 1,
+      "cell": {
+        "row": 3,
+        "col": 5
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 90,
+      "player": 2,
+      "cell": {
+        "row": 4,
+        "col": 0
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 91,
+      "player": 1,
+      "cell": {
+        "row": 0,
+        "col": 4
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 92,
+      "player": 2,
+      "cell": {
+        "row": 9,
+        "col": 1
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 93,
+      "player": 1,
+      "cell": {
+        "row": 6,
+        "col": 6
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 94,
+      "player": 2,
+      "cell": {
+        "row": 3,
+        "col": 9
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 95,
+      "player": 1,
+      "cell": {
+        "row": 1,
+        "col": 3
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 96,
+      "player": 2,
+      "cell": {
+        "row": 9,
+        "col": 3
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 97,
+      "player": 1,
+      "cell": {
+        "row": 3,
+        "col": 3
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 98,
+      "player": 2,
+      "cell": {
+        "row": 8,
+        "col": 0
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 99,
+      "player": 1,
+      "cell": {
+        "row": 1,
+        "col": 5
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 100,
+      "player": 2,
+      "cell": {
+        "row": 2,
+        "col": 6
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 101,
+      "player": 1,
+      "cell": {
+        "row": 8,
+        "col": 2
+      },
+      "result": "miss"
+    },
+    {
+      "turn": 102,
+      "player": 2,
+      "cell": {
+        "row": 1,
+        "col": 9
+      },
+      "result": "hit"
+    },
+    {
+      "turn": 103,
+      "player": 2,
+      "cell": {
+        "row": 1,
+        "col": 8
+      },
+      "result": "sunk"
+    }
+  ],
+  "hit_count": {
+    "1": 15,
+    "2": 17
+  },
+  "miss_count": {
+    "1": 36,
+    "2": 35
+  },
+  "sunk_ships": [],
+  "end_time": "2025-05-18T18:31:15.411543",
+  "winner": 2,
+  "total_turns": 103
+}
