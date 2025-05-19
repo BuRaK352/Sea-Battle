@@ -78,15 +78,19 @@ class Game:
 
         if hit:
             player.search[index] = "H"
-            result = "hit"
+            result = "hit" 
             ship_size = None
             for ship in opponent.ships:
-                if all(player.search[i] in ["H", "S"] for i in ship.indexes):
+                result = "sunk"
+                for i in ship.indexes:
+                    if player.search[i] == "U":
+                        result = "hit"
+                        ship_size = ship.size
+                        break
+                if result=="sunk":
                     for i in ship.indexes:
                         player.search[i] = "S"
-                    result = "sunk"
                     ship_size = ship.size
-                    break
         else:
             player.search[index] = "M"
             result = "miss"
