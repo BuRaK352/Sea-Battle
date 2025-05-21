@@ -5,10 +5,12 @@ import pygame
 from engine import Game,Ship
 from log_helper import set_username
 from login import login_screen
-
+from ai_agent import QLearningAgent
+import pickle
 import sys
 
 username = login_screen()
+agent = QLearningAgent()
 set_username(username)
 pygame.init()
 pygame.font.init()
@@ -195,6 +197,15 @@ game = Game(HUMAN1,HUMAN2)
 
 #pygame loop
 
+
+# Compute the two shooting‐grid Rects:
+P1_RECT = pygame.Rect(0, 0, SQ_SIZE*10, SQ_SIZE*10)
+P2_LEFT = (WIDTH - H_MARGIN)//2 + H_MARGIN
+P2_TOP  = (HEIGHT - V_MARGIN)//2 + V_MARGIN
+P2_RECT = pygame.Rect(P2_LEFT, P2_TOP, SQ_SIZE*10, SQ_SIZE*10)
+
+
+
 running = True
 pausing = False
 while running:
@@ -207,16 +218,16 @@ while running:
         # user clicks on mouse
         if event.type == pygame.MOUSEBUTTONDOWN and not game.over:
            x,y = pygame.mouse.get_pos()
-           if game.player1_turn and x < SQ_SIZE * 10 and y < SQ_SIZE * 10:
-               row = y//SQ_SIZE
-               col = x//SQ_SIZE
-               index = row * 10 + col
-               game.make_move(index)
-           elif not game.player1_turn and x > WIDTH - SQ_SIZE * 10 and y > SQ_SIZE * 10 + V_MARGIN:
-               row = (y- SQ_SIZE*10 - V_MARGIN)//SQ_SIZE
-               col = (x - SQ_SIZE * 10 - H_MARGIN) // SQ_SIZE
-               index = row * 10 + col
-               game.make_move(index)
+           if game.player1_turn and P1_RECT.collidepoint(x, y):
+                           row = (y - P1_RECT.top) // SQ_SIZE
+                           col = (x - P1_RECT.left) // SQ_SIZE
+                           index = row * 10 + col
+                           game.make_move(index)
+           elif not game.player1_turn and P2_RECT.collidepoint(x, y):
+                           row = (y - P2_RECT.top) // SQ_SIZE
+                           col = (x - P2_RECT.left) // SQ_SIZE
+                           index = row * 10 + col
+                           game.make_move(index)
 
         #user preses keys on keyboard
         if event.type == pygame.KEYDOWN:
@@ -244,8 +255,7 @@ while running:
 
             # draw search grids
             draw_grid(game.player1, search=True)
-            draw_grid(game.player2, search=True, left=(WIDTH - H_MARGIN) // 2 + H_MARGIN,
-                      top=(HEIGHT - V_MARGIN) // 2 + V_MARGIN)
+            draw_grid(game.player2, search=True, left=(WIDTH - H_MARGIN) // 2 + H_MARGIN,top=(HEIGHT - V_MARGIN) // 2 + V_MARGIN)
 
             # draw position grids
             draw_grid(game.player1, top=(HEIGHT - V_MARGIN) // 2 + V_MARGIN)
@@ -262,10 +272,30 @@ while running:
 
             # Computer moves
             if not game.over and game.computer_turn:
-                if game.player1_turn:
-                    game.basic_ai()
-                else:
-                    game.basic_ai()
+                # hangi oyuncunun sırasıysa onun search grid’ini al
+                current_search = game.player1.search if game.player1_turn else game.player2.search
+
+                # e‑greedy hamleyi seç
+                action = agent.choose_action(current_search)
+                if action is not None:
+                    # güncelleme için eski grid’i sakla
+                    prev_search = current_search.copy()
+                    # hamleyi uygula
+                    game.make_move(action)
+                    # ödül hesapla
+                    result = current_search[action]  # 'M', 'H' veya 'S'
+                    if result == "M":
+                        reward = -0.1
+                    elif result == "H":
+                        reward = +1
+                    elif result == "S":
+                        reward = +3
+                    # yeni grid’i al
+                    next_search = current_search
+                    # Q‑learning güncellemesi
+                    agent.update(prev_search, action, reward, next_search)
+                    # model kaydet
+                    agent.save()
 
             # game over message
             if game.over:
