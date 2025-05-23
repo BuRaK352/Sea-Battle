@@ -10,7 +10,7 @@ import pickle
 import sys
 
 username = login_screen()
-agent = QLearningAgent()
+agent = QLearningAgent(username)
 set_username(username)
 pygame.init()
 pygame.font.init()
@@ -293,16 +293,14 @@ while running:
                     # yeni grid’i al
                     next_search = current_search
                     # Q‑learning güncellemesi
-                    agent.update(prev_search, action, reward, next_search)
-                    # model kaydet
-                    agent.save()
+                    agent.update_q(prev_search, action, reward, next_search)
+
 
             # game over message
             if game.over:
                 text = "Player" + str(game.result) + " wins!"
                 textbox = myfont.render(text, False, GRAY, WHITE)
                 SCREEN.blit(textbox, (WIDTH // 2 - 240, HEIGHT // 2 - 50))
-
         # update screen
         pygame.time.wait(100)
         pygame.display.flip()
