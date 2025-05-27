@@ -60,6 +60,22 @@ BLUE=(50,150,200)
 ORANGE=(250,140,20)
 COLORS = {"U": GRAY, "M": BLUE, "H": ORANGE, "S": RED}
 
+from engine import Ship
+
+def convert_placed_to_ships():
+    ships = []
+    for ship_dict in placed_ships:
+        size = ship_dict["size"]
+        start = ship_dict["cells"][0]
+        row = start // 10
+        col = start % 10
+        if len(ship_dict["cells"]) == 1:
+            orientation = "h"
+        else:
+            second = ship_dict["cells"][1]
+            orientation = "h" if second // 10 == row else "v"
+        ships.append(Ship(size=size, row=row, col=col, orientation=orientation))
+    return ships
 #function to draw a grid
 def draw_grid(player, left=0, top=0, search = False):
     for i in range(100):
@@ -191,9 +207,9 @@ def draw_grid_background():
 
 
 
-run_menu()
 HUMAN1,HUMAN2=run_menu()
-game = Game(HUMAN1,HUMAN2)
+manual_ships = convert_placed_to_ships() if HUMAN1 else None
+game = Game(human1=HUMAN1, human2=HUMAN2, manual_ships=manual_ships)
 
 #pygame loop
 
