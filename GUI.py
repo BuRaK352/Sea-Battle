@@ -48,31 +48,10 @@ BLUE = (50, 150, 200)
 ORANGE = (250, 140, 20)
 COLORS = {"U": GRAY, "M": BLUE, "H": ORANGE, "S": RED}
 
-<<<<<<< HEAD
 ANALYSIS_BUTTONS = []
 GRAPH_IMAGE = None
 
 def draw_grid(player, left=0, top=0, search=False):
-=======
-from engine import Ship
-
-def convert_placed_to_ships():
-    ships = []
-    for ship_dict in placed_ships:
-        size = ship_dict["size"]
-        start = ship_dict["cells"][0]
-        row = start // 10
-        col = start % 10
-        if len(ship_dict["cells"]) == 1:
-            orientation = "h"
-        else:
-            second = ship_dict["cells"][1]
-            orientation = "h" if second // 10 == row else "v"
-        ships.append(Ship(size=size, row=row, col=col, orientation=orientation))
-    return ships
-#function to draw a grid
-def draw_grid(player, left=0, top=0, search = False):
->>>>>>> 40ff9290bfb74febe0a2e1a8d7bc5bb66d201ab7
     for i in range(100):
         x = left + i % 10 * SQ_SIZE
         y = top + i // 10 * SQ_SIZE
@@ -324,44 +303,8 @@ def run_menu():
         pygame.display.flip()
         clock.tick(60)
 
-<<<<<<< HEAD
 HUMAN1, HUMAN2 = run_menu()
 game = Game(HUMAN1, HUMAN2)
-=======
-import pygame
-import sys
-from engine import Game
-
-pygame.init()
-pygame.font.init()
-
-
-
-
-def draw_grid_background():
-    for i in range(100):
-        x = GAME_AREA_WIDTH // 2 - 5 * SQ_SIZE + (i % 10) * SQ_SIZE
-        y = SCREEN_HEIGHT // 2 - 5 * SQ_SIZE + (i // 10) * SQ_SIZE
-        square = pygame.Rect(x, y, SQ_SIZE, SQ_SIZE)
-        pygame.draw.rect(SCREEN, WHITE, square, width=1)
-
-
-
-
-HUMAN1,HUMAN2=run_menu()
-manual_ships = convert_placed_to_ships() if HUMAN1 else None
-game = Game(human1=HUMAN1, human2=HUMAN2, manual_ships=manual_ships)
-
-#pygame loop
-
-
-# Compute the two shooting‐grid Rects:
-P1_RECT = pygame.Rect(0, 0, SQ_SIZE*10, SQ_SIZE*10)
-P2_LEFT = (WIDTH - H_MARGIN)//2 + H_MARGIN
-P2_TOP  = (HEIGHT - V_MARGIN)//2 + V_MARGIN
-P2_RECT = pygame.Rect(P2_LEFT, P2_TOP, SQ_SIZE*10, SQ_SIZE*10)
-
->>>>>>> 40ff9290bfb74febe0a2e1a8d7bc5bb66d201ab7
 
 P1_RECT = pygame.Rect(0, 0, SQ_SIZE * 10, SQ_SIZE * 10)
 P2_LEFT = (WIDTH - H_MARGIN) // 2 + H_MARGIN

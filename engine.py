@@ -28,16 +28,6 @@ class Player:
         self.place_ships([5, 4, 3, 3, 2])
         self.indexes = [i for ship in self.ships for i in ship.indexes]
 
-
-        def __init__(self, human=False, manual_ships=None):
-            self.human = human
-            self.ships = manual_ships if manual_ships else []
-            self.search = ["U"] * 100
-
-            if not self.human and not manual_ships:
-                self.place_ships([5, 4, 3, 3, 2])
-            self.indexes = [i for ship in self.ships for i in ship.indexes]
-
     def place_ships(self, sizes):
         for size in sizes:
             placed = False
@@ -57,8 +47,6 @@ class Player:
 class Game:
     def __init__(self, human1=False, human2=False, username=None):
         # Kullanıcı adı verildiyse set et
-        self.human1 = Player(human=human1, )
-        self.human2 = Player(human=human2)
         if username:
             set_username(username)
         self.human1 = human1
