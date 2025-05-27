@@ -1,177 +1,128 @@
+# engine.py
 import random
-from re import search
-
+from log_helper import create_log_data, add_move, finalize_log, set_username
 
 class Ship:
     def __init__(self, size):
-        self.row = random.randrange(0,9)
-        self.col = random.randrange(0,9)
         self.size = size
-        self.orientation = random.choice(["v","h"])
+        self.orientation = random.choice(["v", "h"])
+        self.row = random.randrange(0, 10)
+        self.col = random.randrange(0, 10)
         self.indexes = self.compute_indexes()
 
     def compute_indexes(self):
-        start_index = self.row *10 + self.col
         if self.orientation == "h":
-            return[start_index + i for i in range(self.size)]
-        elif self.orientation == "v":
-            return[start_index + i * 10 for i in range(self.size)]
+            if self.col + self.size > 10:
+                return []
+            return [self.row * 10 + self.col + i for i in range(self.size)]
+        else:
+            if self.row + self.size > 10:
+                return []
+            return [(self.row + i) * 10 + self.col for i in range(self.size)]
 
 class Player:
-    def __init__(self):
+    def __init__(self, human=False):
+        self.human = human
         self.ships = []
-        self.search = ["U" for i in range(100)] # "U" for "Unknown"
-        self.place_ships(sizes = [5,4,3,3,2])
-        list_of_lists = [ship.indexes for ship in self.ships]
-        self.indexes = [index for sublist in list_of_lists for index in sublist]
-
+        self.search = ["U"] * 100
+        self.place_ships([5, 4, 3, 3, 2])
+        self.indexes = [i for ship in self.ships for i in ship.indexes]
 
     def place_ships(self, sizes):
         for size in sizes:
             placed = False
             while not placed:
-                #create a new ship
                 ship = Ship(size)
-                #check if placement is possible
-                possible = True
-                for i in ship.indexes:
-                    #indexes must be below 100
-                    if i >= 100:
-                        possible = False
-                        break
-                    # ships cannot behave like "snake" in the "snake game"
-                    new_row = i // 10
-                    new_col = i % 10
-                    if new_row != ship.row and new_col != ship.col:
-                        possible = False
-                        break
-
-                    # ships cannot intersect
-                    for other_ship in self.ships:
-                        if i in other_ship.indexes:
-                            possible = False
-                            break
-                # place the ship
-                if possible:
-                    self.ships.append(ship)
-                    placed = True
-
-    def show_ships(self):
-        indexes = ["-" if i not in self.indexes else "X" for i in range(100)]
-        for row in range(10):
-            print(" ".join(indexes[(row-1)*10:row*10]))
-
-            player = Player()
-            player.show_ships()
-            print(player.ships)
-            print(player.indexes)
-
+                if not ship.indexes or any(i >= 100 for i in ship.indexes):
+                    continue
+                if ship.orientation == "h" and any(i // 10 != ship.row for i in ship.indexes):
+                    continue
+                if ship.orientation == "v" and any(i % 10 != ship.col for i in ship.indexes):
+                    continue
+                if any(i in prev for prev in [s.indexes for s in self.ships] for i in ship.indexes):
+                    continue
+                self.ships.append(ship)
+                placed = True
 
 class Game:
-    def __init__(self, human1, human2):
+    def __init__(self, human1=False, human2=False, username=None):
+        # Kullanıcı adı verildiyse set et
+        if username:
+            set_username(username)
         self.human1 = human1
         self.human2 = human2
-        self.player1 = Player()
-        self.player2 = Player()
+        self.player1 = Player(human1)
+        self.player2 = Player(human2)
+        # Log oluştur
+        self.log = create_log_data(
+            player1_ships=self.player1.ships,
+            player2_ships=self.player2.ships
+        )
         self.player1_turn = True
-        self.computer_turn = True if not self.human1 else False
+        self.computer_turn = not human1 or not human2
         self.over = False
         self.result = None
         self.n_shots = 0
 
-    def make_move(self, i):
+    @property
+    def current_search(self):
+        return self.player1.search if self.player1_turn else self.player2.search
+
+    @property
+    def opponent(self):
+        return self.player2 if self.player1_turn else self.player1
+
+    def make_move(self, index):
+        if self.over:
+            return
         player = self.player1 if self.player1_turn else self.player2
         opponent = self.player2 if self.player1_turn else self.player1
-        hit = False
-
-        # set miss "M" or hit "H"
-        if i in opponent.indexes:
-            player.search[i] = "H"
-            hit=True
-
-            # check if ship is sunk ("S")
+        # Tekrar eden vuruşu engelle
+        if player.search[index] != "U":
+            return
+        hit = index in opponent.indexes
+        if hit:
+            player.search[index] = "H"
+            result = "hit"
             for ship in opponent.ships:
-                sunk = True
-                for i in ship.indexes:
-                    if player.search[i] == "U":
-                        sunk = False
-                        break
-                if sunk:
-                    for i in ship.indexes:
-                        player.search[i] = "S"
-
+                if index in ship.indexes:
+                    if all(player.search[i] != "U" for i in ship.indexes):
+                        for i in ship.indexes:
+                            player.search[i] = "S"
+                        result = "sunk"
+                    break
         else:
-            player.search[i] = "M"
-
-
-        #check if game over
-        game_over = True
-        for i in opponent.indexes:
-            if player.search[i] == "U":
-                game_over = False
-        self.over = game_over
-        self.result = 1 if self.player1_turn else 2
-
-
-        # change the active team
+            player.search[index] = "M"
+            result = "miss"
+        self.n_shots += 1
+        add_move(self.log, turn=self.n_shots, player=1 if self.player1_turn else 2,
+                 index=index, result=result, ship_size=None)
+        # Oyun bitti mi?
+        if all(self.player1.search[i] != "U" for i in self.player2.indexes) or \
+           all(self.player2.search[i] != "U" for i in self.player1.indexes):
+            self.over = True
+            self.result = 1 if self.player1_turn else 2
+            finalize_log(self.log, winner=self.result)
+            return
         if not hit:
             self.player1_turn = not self.player1_turn
-
-
-        # switch between human and computer turns
-            if (self.human1 and not self.human2) or (not self.human1 and self.human2):
+            if self.human1 != self.human2:
                 self.computer_turn = not self.computer_turn
-        # add to the number of shots fired
-        self.n_shots += 1
 
     def random_ai(self):
-        search = self.player1.search if self.player1_turn else self.player2.search
-        unknown = [i for i, square in enumerate(search) if square == "U"]
-        if len(unknown) >0:
-            random_index = random.choice(unknown)
-            self.make_move(random_index)
+        unknown = [i for i, sq in enumerate(self.current_search) if sq == "U"]
+        if unknown:
+            self.make_move(random.choice(unknown))
 
     def basic_ai(self):
-        # setup
-        search = self.player1.search if self.player1_turn else self.player2.search
-        unknown = [i for i, square in enumerate(search) if square == "U"]
-        hits = [i for i, square in enumerate(search) if square == "H"]
-
-        # search in neighborhood of hits
-        unknown_with_neighboring_hits1 = []
-        unknown_with_neighboring_hits2 = []
-
-        for u in unknown:
-            if u + 1 in hits or u - 1 in hits or u - 10 in hits or u + 10 in hits:
-                unknown_with_neighboring_hits1.append(u)
-            if u + 2 in hits or u - 2 in hits or u - 20 in hits or u + 20 in hits:
-                unknown_with_neighboring_hits2.append(u)
-
-        # pick "U" square with direct and level-2 neighbor both marked as "H"
-        for u in unknown:
-            if u in unknown_with_neighboring_hits1 and u in unknown_with_neighboring_hits2:
-                self.make_move(u)
-                return
-
-        # pick "U" square that has a level-1 neighbor marked as "H" and a level-2 neighbor marked as a "H"
-        if len(unknown_with_neighboring_hits1) > 0:
-            self.make_move(random.choice(unknown_with_neighboring_hits1))
+        unknown = [i for i, sq in enumerate(self.current_search) if sq == "U"]
+        hits = [i for i, sq in enumerate(self.current_search) if sq == "H"]
+        near = [u for u in unknown if any(abs(u-h) in (1, 10) for h in hits)]
+        if near:
+            self.make_move(random.choice(near))
             return
-
-        # checker board pattern
-        checker_board = []
-        for u in unknown:
-            row = u // 10
-            col = u % 10
-            if (row+col)%2 == 0:
-                checker_board.append(u)
-        if len(checker_board) > 0:
-            self.make_move(random.choice(checker_board))
+        checker = [u for u in unknown if (u//10 + u%10) % 2 == 0]
+        if checker:
+            self.make_move(random.choice(checker))
             return
-
-        # random move
         self.random_ai()
-
-
-
-
