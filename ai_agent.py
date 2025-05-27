@@ -6,6 +6,7 @@ from collections import defaultdict
 import pickle
 import numpy as np
 import random
+import matplotlib.pyplot as plt
 
 class QLearningAgent:
     def __init__(
@@ -86,7 +87,6 @@ class QLearningAgent:
             delta = abs(hits[1] - hits[0])
             if delta == 1 or delta == 10:
                 direction = delta
-                # extend in both directions from first and last hit
                 options = []
                 min_hit = min(hits)
                 max_hit = max(hits)
@@ -134,27 +134,152 @@ class QLearningAgent:
         self.q_table[s][action] = old + self.alpha * (reward + self.gamma * best_next - old)
 
     def learn_from_logs(self):
-        combined = self.user_dir / "combined_logs.json"
-        entries = []
-        if combined.exists():
+        """Ayrı ayrı game_*.json dosyalarından öğrenme yapar"""
+        if not self.user_dir.exists():
+            return
+
+        # Kullanıcının tüm oyun dosyalarını bul
+        game_files = list(self.user_dir.glob("game_*.json"))
+        if not game_files:
+            print(f"{self.user_dir} dizininde oyun dosyası bulunamadı")
+            return
+
+        for game_file in game_files:
             try:
-                with open(combined, encoding='utf-8') as f:
-                    entries = json.load(f)
-            except Exception:
-                entries = []
-        for data in entries:
-            grid = ['U'] * 100
-            for move in data.get('moves', []):
-                if move.get('player') != 1:
+                with open(game_file, 'r', encoding='utf-8') as f:
+                    game_data = json.load(f)
+
+                # Sadece bu kullanıcının verilerini işle
+                if game_data.get('user_id') != self.user_id:
                     continue
+
+                self._process_game_data(game_data)
+
+            except Exception as e:
+                print(f"{game_file} işlenirken hata: {e}")
+
+        self.save()
+        print(f"Q-table güncellendi (İşlenen oyun sayısı: {len(game_files)})")
+
+        def _process_game_data(self, game_data):
+            """Tek bir oyun verisini işler"""
+            grid = ['U'] * 100
+            for move in game_data.get('moves', []):
+                if move.get('player') != 1:  # Sadece AI hamleleri
+                    continue
+
                 idx = move['cell']['row'] * 10 + move['cell']['col']
-                prev = grid.copy()
-                res = move.get('result')
-                if res in ('hit', 'sunk'):
+                prev_grid = grid.copy()
+                result = move.get('result')
+
+                # Grid ve ödülü güncelle
+                if result in ('hit', 'sunk'):
                     grid[idx] = 'H'
-                    reward = 1 if res == 'hit' else 10
+                    reward = 3 if result == 'sunk' else 1
                 else:
                     grid[idx] = 'M'
-                    reward = -0.05
-                self.update_q(prev, idx, reward, grid)
-        self.save()
+                    reward = -0.1
+
+                # Q-tablosunu güncelle
+                self.update_q(prev_grid, idx, reward, grid)
+
+                # Gemi batırıldıysa ek ödül
+                if result == 'sunk':
+                    self._reward_sunken_ship(prev_grid, grid, move)
+
+        def _reward_sunken_ship(self, prev_grid, grid, move):
+            """Batırılan gemi için ek ödül verir"""
+            ship_size = move.get('ship_size', 0)
+            for _ in range(ship_size):
+                self.update_q(prev_grid, idx, 5, grid)
+
+    def plot_qtable_heatmap(self, search_grid, save_path="plot_qtable_heatmap.png"):
+        # Önce Q-tablosunu güncelle
+        self.learn_from_logs()
+
+        # Mevcut state'i al
+        current_state = self.state_from_grid(search_grid)
+
+        # Bu state için Q değerlerini al
+        if current_state not in self.q_table:
+            print(f"Uyarı: Current state Q-table'da bulunamadı!")
+            q_values = np.zeros(100)
+        else:
+            q_values = self.q_table[current_state]
+
+        # Heatmap oluştur
+        heat = np.array(q_values).reshape((10, 10))
+
+        plt.figure(figsize=(10, 8))
+        plt.imshow(heat, origin='upper', interpolation='nearest', cmap='viridis')
+        plt.colorbar(label="Q-Value")
+
+        # Oyun durumunu üstüne çiz
+        for i in range(10):
+            for j in range(10):
+                cell_state = search_grid[i * 10 + j]
+                if cell_state == 'H':
+                    plt.scatter(j, i, color='red', s=100, marker='x')
+                elif cell_state == 'M':
+                    plt.scatter(j, i, color='blue', s=100, marker='o')
+
+        plt.title(f"Q-Table Heatmap (Epsilon: {self.epsilon:.2f})")
+        plt.tight_layout()
+        plt.savefig(save_path)
+        plt.close()
+        print(f"Heatmap güncellendi ve kaydedildi: {save_path}")
+
+
+    def print_qtable_stats(self):
+        print("\nQ-Table İstatistikleri:")
+        print(f"Toplam state sayısı: {len(self.q_table)}")
+        if self.q_table:
+            sample_state = next(iter(self.q_table))
+            print(f"Örnek state: {sample_state}")
+            print(f"Örnek Q değerleri: {self.q_table[sample_state]}")
+        print(f"Epsilon değeri: {self.epsilon}")
+
+    def plot_aggregated_qtable(self, save_path="plot_qtable_heatmap.png"):
+        """Önceki heatmap'i silip yeni bir tane oluşturur."""
+        import os
+        import numpy as np
+        import matplotlib.pyplot as plt
+
+        # Eski dosyayı sil
+        if os.path.exists(save_path):
+            try:
+                os.remove(save_path)
+                print(f"Eski heatmap silindi: {save_path}")
+            except Exception as e:
+                print(f"Dosya silinemedi: {e}")
+
+        # Q-table'ı güncelle
+        self.learn_from_logs()
+
+        if not self.q_table:
+            print("Uyarı: Q-table boş! Önce oyun verisi gerekiyor.")
+            return
+
+        # Tüm Q değerlerinin ortalamasını hesapla
+        q_values = np.mean(list(self.q_table.values()), axis=0)  # Düzeltme burada
+        heatmap_data = q_values.reshape((10, 10))
+
+        # Heatmap oluştur
+        plt.figure(figsize=(10, 8))
+        heatmap = plt.imshow(
+            heatmap_data,  # Düzeltilmiş veri
+            cmap="viridis",
+            interpolation="nearest",
+            origin="upper"
+        )
+        plt.colorbar(heatmap, label="Q Değeri")
+        plt.title(f"Güncel Q-Table Heatmap (Kullanıcı: {self.user_id})")
+
+        # Eksen etiketleri
+        plt.xticks(range(10))
+        plt.yticks(range(10))
+
+        plt.tight_layout()
+        plt.savefig(save_path)
+        plt.close()
+        print(f"Yeni heatmap oluşturuldu: {save_path}")
