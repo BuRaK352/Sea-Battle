@@ -1,178 +1,312 @@
-import pygame
+# --- Temel Ayarlar ve Global Değişkenler ---
+placed_ships = []
+remaining_ships = [5, 4, 3, 3, 2,]
+placing_orientation = "h"
+
+# --- Gemi Yerleştirme Fonksiyonları ---
+def draw_ship_preview(row, col, size, orientation, color=GREEN):
+    for i in range(size):
+        dx = i if orientation == "h" else 0
+        dy = i if orientation == "v" else 0
+        x = GAME_AREA_WIDTH // 2 - 5 * SQ_SIZE + (col + dx) * SQ_SIZE + INDENT
+        y = SCREEN_HEIGHT // 2 - 5 * SQ_SIZE + (row + dy) * SQ_SIZE + INDENT
+        w = SQ_SIZE - 2 * INDENT
+        h = SQ_SIZE - 2 * INDENT
+        rect = pygame.Rect(x, y, w, h)
+        pygame.draw.rect(SCREEN, color, rect, border_radius=6)
+
+def is_valid_placement(row, col, size, orientation):
+    for i in range(size):
+        dx = i if orientation == "h" else 0
+        dy = i if orientation == "v" else 0
+        r = row + dy
+        c = col + dx
+        if r >= 10 or c >= 10:
+            return False
+        index = r * 10 + c
+        for ship in placed_ships:
+            if index in ship["cells"]:
+                return False
+    return True
+
+def add_ship(row, col, size, orientation):
+    cells = []
+    for i in range(size):
+        dx = i if orientation == "h" else 0
+        dy = i if orientation == "v" else 0
+        r = row + dy
+        c = col + dx
+        cells.append(r * 10 + c)
+    placed_ships.append({"size": size, "cells": cells})
+
+
+from engine import Ship  # yukarıya eklendiğinden emin ol
+
+
+
+def draw_ship_list():
+    font = pygame.font.SysFont("arial", 24)
+    x, y = STAT_ORIGIN[0] + 20, 200
+    line_height = 35
+    SCREEN.blit(font.render("Kalan Gemiler:", True, WHITE), (x, y - 40))
+    counted = {}
+    for size in remaining_ships:
+        counted[size] = counted.get(size, 0) + 1
+    for i, (size, count) in enumerate(sorted(counted.items(), reverse=True)):
+        SCREEN.blit(font.render(f"{size} birimlik gemi x{count}", True, WHITE), (x, y + i * line_height))
+
+# --- Gemi Yerleştirme Ana Fonksiyonu ---
+def run_ship_placement():
+    global placing_orientation
+    clock = pygame.time.Clock()
+    placing = True
+
+    while placing:
+        SCREEN.fill(GRAY)
+        draw_grid_background()
+        draw_ship_list()
+
+        mx, my = pygame.mouse.get_pos()
+        grid_x = GAME_AREA_WIDTH // 2 - 5 * SQ_SIZE
+        grid_y = SCREEN_HEIGHT // 2 - 5 * SQ_SIZE
+        col = (mx - grid_x) // SQ_SIZE
+        row = (my - grid_y) // SQ_SIZE
+
+        # Geçerli konumda hover gemi göster
+        if 0 <= row < 10 and 0 <= col < 10 and remaining_ships:
+            size = remaining_ships[0]
+            if is_valid_placement(row, col, size, placing_orientation):
+                draw_ship_preview(row, col, size, placing_orientation, ORANGE)
+
+        # Yerleştirilen gemileri çiz
+        for ship in placed_ships:
+            for idx in ship["cells"]:
+                r, c = idx // 10, idx % 10
+                draw_ship_preview(r, c, 1, "h", GREEN)
+
+        # Event kontrolü
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_r:
+                    placing_orientation = "v" if placing_orientation == "h" else "h"
+
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if 0 <= row < 10 and 0 <= col < 10 and remaining_ships:
+                    size = remaining_ships[0]
+                    if is_valid_placement(row, col, size, placing_orientation):
+                        add_ship(row, col, size, placing_orientation)
+                        remaining_ships.pop(0)
+
+        # Tüm gemiler yerleştiyse start butonu göster
+        if not remaining_ships:
+            start_btn = pygame.Rect(SCREEN_WIDTH - 250, SCREEN_HEIGHT - 100, 200, 60)
+            draw_button("Start", start_btn, BLUE, WHITE)
+            if pygame.mouse.get_pressed()[0] and start_btn.collidepoint(pygame.mouse.get_pos()):
+                placing = False
+
+        pygame.display.flip()
+        clock.tick(60)
+
+
+
+
+
+#BURADAKILER ENGINE.PY DOSYASININ ICINDEKILERLE ILGILI
 import random
+from log_helper import create_log_data, add_move, finalize_log
 
-# Pygame Başlatma
-pygame.init()
 
-# Ekran Boyutları
-WIDTH, HEIGHT = 600, 600
-SCREEN = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Battleship")
+class Ship:
+    def __init__(self, size, row=None, col=None, orientation=None):
+        self.size = size
+        self.orientation = orientation
+        self.row = row
+        self.col = col
+        self.indexes = []
 
-# Renkler
-WHITE = (255, 255, 255)
-BLUE = (50, 50, 255)
-RED = (255, 0, 0)
-GREEN = (0, 255, 0)
-BLACK = (0, 0, 0)
+        if self.row is not None and self.col is not None and self.orientation is not None:
+            self.indexes = self.compute_indexes()
 
-# Grid Boyutu ve Satır/Sütun Sayısı
-GRID_SIZE = 10
-SQUARE_SIZE = WIDTH // GRID_SIZE
+    def compute_indexes(self):
+        if self.orientation == "h":
+            if self.col + self.size > 10:
+                return []
+            return [self.row * 10 + self.col + i for i in range(self.size)]
+        else:
+            if self.row + self.size > 10:
+                return []
+            return [(self.row + i) * 10 + self.col for i in range(self.size)]
 
-# Font
-font = pygame.font.SysFont("Arial", 30)
 
-# Oyuncu ve Bilgisayar için Oyun Tahtaları
-player_board = [['U' for _ in range(GRID_SIZE)] for _ in range(GRID_SIZE)]  # U: Unknown
-computer_board = [['U' for _ in range(GRID_SIZE)] for _ in range(GRID_SIZE)]
+def place_random_ship(board, size):
+    while True:
+        orientation = random.choice(["h", "v"])
+        row = random.randint(0, 9)
+        col = random.randint(0, 9)
 
-# Gemiler
-ships = [5, 4, 3, 3, 2]  # Gemilerin boyutları
+        ship = Ship(size, row, col, orientation)
+        if not ship.indexes:
+            continue
+        if all(board[i] == 0 for i in ship.indexes):
+            for i in ship.indexes:
+                board[i] = 1
+            return ship
 
-# Oyun Sınıfı
+
+def setup_ai_ships():
+    ai_board = [0] * 100
+    ai_ships = []
+    for size in [5, 4, 3, 3, 2]:
+        ship = place_random_ship(ai_board, size)
+        ai_ships.append(ship)
+    return ai_ships
+
+
+class Player:
+    def __init__(self, human=False):
+        self.human = human
+        self.ships = []
+        self.search = ["U"] * 100
+        self.indexes = []
+
+    def update_indexes(self):
+        self.indexes = [i for ship in self.ships for i in ship.indexes]
+
+
+    # Yeni fonksiyon: Manuel olarak gemi yerleştirme (GUI'den çağrılacak)
+    def place_ship_manually(self, size, row, col, orientation):
+        ship = Ship(size, row, col, orientation)
+        if not ship.indexes:
+            return False  # Geçersiz yerleşim (tahta dışı)
+
+        # Diğer gemilerle çakışma kontrolü
+        for existing_ship in self.ships:
+            if set(ship.indexes) & set(existing_ship.indexes):
+                return False
+
+        self.ships.append(ship)
+        self.update_indexes()
+        return True
+
+
 class Game:
-    def _init_(self):
-        self.player_turn = True
-        self.game_over = False
+    def __init__(self, human1=False, human2=False):
+        self.human1 = human1
+        self.human2 = human2
 
-    def draw_grid(self, board, x_offset=0, y_offset=0):
-        for row in range(GRID_SIZE):
-            for col in range(GRID_SIZE):
-                color = WHITE
-                if board[row][col] == 'H':  # Vuruş
-                    color = RED
-                elif board[row][col] == 'M':  # Iska
-                    color = BLUE
-                pygame.draw.rect(SCREEN, color, (x_offset + col * SQUARE_SIZE, y_offset + row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
-                pygame.draw.rect(SCREEN, BLACK, (x_offset + col * SQUARE_SIZE, y_offset + row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE), 2)
+        self.player1 = Player(human1)
+        self.player2 = Player(human2)
 
-    def place_ships(self, board):
-        for size in ships:
-            placed = False
-            while not placed:
-                orientation = random.choice(["H", "V"])  # Yatay veya Dikey
-                row = random.randint(0, GRID_SIZE - 1)
-                col = random.randint(0, GRID_SIZE - 1)
-                if orientation == "H" and col + size <= GRID_SIZE:  # Yatay yerleştirme
-                    if all(board[row][col + i] == 'U' for i in range(size)):
-                        for i in range(size):
-                            board[row][col + i] = 'S'
-                        placed = True
-                elif orientation == "V" and row + size <= GRID_SIZE:  # Dikey yerleştirme
-                    if all(board[row + i][col] == 'U' for i in range(size)):
-                        for i in range(size):
-                            board[row + i][col] = 'S'
-                        placed = True
+        # AI oyuncu ise gemileri otomatik yerleştir
+        if not human1:
+            self.player1.ships = setup_ai_ships()
+            self.player1.update_indexes()
+        if not human2:
+            self.player2.ships = setup_ai_ships()
+            self.player2.update_indexes()
 
-    def handle_turn(self, row, col, opponent_board):
-        if opponent_board[row][col] == 'U':
-            opponent_board[row][col] = 'M'  # Iska
-        elif opponent_board[row][col] == 'S':
-            opponent_board[row][col] = 'H'  # Vuruş
+        self.log = create_log_data(
+            player1_ships=self.player1.ships,
+            player2_ships=self.player2.ships
+        )
 
-    def check_win(self, board):
-        return all(cell != 'S' for row in board for cell in row)
+        self.player1_turn = True
+        self.computer_turn = not human1 or not human2
+        self.over = False
+        self.result = None
+        self.n_shots = 0
 
-# Oyun başlatma
-game = Game()
+        print("Player1 Ships:", [ship.indexes for ship in self.player1.ships])
+        print("Player2 Ships:", [ship.indexes for ship in self.player2.ships])
 
-# Gemileri yerleştir
-game.place_ships(player_board)
-game.place_ships(computer_board)
+    def make_move(self, index):
+        if self.over:
+            return
+        player = self.player1 if self.player1_turn else self.player2
+        opponent = self.player2 if self.player1_turn else self.player1
 
-# Ana oyun döngüsü
-running = True
-while running:
-    SCREEN.fill(BLACK)
+        if player.search[index] != "U":
+            return
 
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
+        hit = index in opponent.indexes
 
-        if event.type == pygame.MOUSEBUTTONDOWN and not game.game_over:
-            x, y = pygame.mouse.get_pos()
-            row, col = y // SQUARE_SIZE, x // SQUARE_SIZE
-            if game.player_turn:
-                # Oyuncu kendi tahtasına atış yapamaz
-                if computer_board[row][col] == 'U':
-                    game.handle_turn(row, col, computer_board)
-                    if game.check_win(computer_board):
-                        game.game_over = True
-                        print("Player Wins!")
-                    game.player_turn = False
-            else:
-                # Bilgisayarın sırası
-                row, col = random.randint(0, GRID_SIZE-1), random.randint(0, GRID_SIZE-1)
-                game.handle_turn(row, col, player_board)
-                if game.check_win(player_board):
-                    game.game_over = True
-                    print("Computer Wins!")
-                game.player_turn = True
+        if hit:
+            player.search[index] = "H"
+            result = "hit"
+            ship_size = None
+            for ship in opponent.ships:
+                result = "sunk"
+                for i in ship.indexes:
+                    if player.search[i] == "U":
+                        result = "hit"
+                        ship_size = ship.size
+                        break
+                if result == "sunk":
+                    for i in ship.indexes:
+                        player.search[i] = "S"
+                    ship_size = ship.size
+        else:
+            player.search[index] = "M"
+            result = "miss"
+            ship_size = None
 
+        self.n_shots += 1
+        add_move(self.log, turn=self.n_shots, player=1 if self.player1_turn else 2,
+                 index=index, result=result, ship_size=ship_size)
 
-                class Game:
-                    def _init_(self):
-                        self.player_turn = True
-                        self.game_over = False  # Oyun bittiyse True olacak
-                        self.winner = None  # Kazananı belirlemek için bir değişken
+        if all(self.player1.search[i] != "U" for i in self.player2.indexes) or \
+           all(self.player2.search[i] != "U" for i in self.player1.indexes):
+            self.over = True
+            self.result = 1 if self.player1_turn else 2
+            finalize_log(self.log, winner=self.result)
+            return
 
-                    def draw_grid(self, board, x_offset=0, y_offset=0):
-                        for row in range(GRID_SIZE):
-                            for col in range(GRID_SIZE):
-                                color = WHITE
-                                if board[row][col] == 'H':  # Vuruş
-                                    color = RED
-                                elif board[row][col] == 'M':  # Iska
-                                    color = BLUE
-                                pygame.draw.rect(SCREEN, color,
-                                                 (x_offset + col * SQUARE_SIZE, y_offset + row * SQUARE_SIZE,
-                                                  SQUARE_SIZE, SQUARE_SIZE))
-                                pygame.draw.rect(SCREEN, BLACK,
-                                                 (x_offset + col * SQUARE_SIZE, y_offset + row * SQUARE_SIZE,
-                                                  SQUARE_SIZE, SQUARE_SIZE), 2)
+        if not hit:
+            self.player1_turn = not self.player1_turn
+            if self.human1 != self.human2:
+                self.computer_turn = not self.computer_turn
 
-                    def place_ships(self, board):
-                        for size in ships:
-                            placed = False
-                            while not placed:
-                                orientation = random.choice(["H", "V"])  # Yatay veya Dikey
-                                row = random.randint(0, GRID_SIZE - 1)
-                                col = random.randint(0, GRID_SIZE - 1)
-                                if orientation == "H" and col + size <= GRID_SIZE:  # Yatay yerleştirme
-                                    if all(board[row][col + i] == 'U' for i in range(size)):
-                                        for i in range(size):
-                                            board[row][col + i] = 'S'
-                                        placed = True
-                                elif orientation == "V" and row + size <= GRID_SIZE:  # Dikey yerleştirme
-                                    if all(board[row + i][col] == 'U' for i in range(size)):
-                                        for i in range(size):
-                                            board[row + i][col] = 'S'
-                                        placed = True
+    def random_ai(self):
+        search = self.player1.search if self.player1_turn else self.player2.search
+        unknown = [i for i, square in enumerate(search) if square == "U"]
+        if unknown:
+            self.make_move(random.choice(unknown))
 
-                    def handle_turn(self, row, col, opponent_board):
-                        if opponent_board[row][col] == 'U':
-                            opponent_board[row][col] = 'M'  # Iska
-                        elif opponent_board[row][col] == 'S':
-                            opponent_board[row][col] = 'H'  # Vuruş
+    def basic_ai(self):
+        search = self.player1.search if self.player1_turn else self.player2.search
+        unknown = [i for i, square in enumerate(search) if square == "U"]
+        hits = [i for i, square in enumerate(search) if square == "H"]
 
-                    def check_win(self, board):
-                        """Tüm gemiler batmış mı kontrol et"""
-                        return all(cell != 'S' for row in board for cell in row)
+        unknown_with_neighboring_hits1 = []
+        unknown_with_neighboring_hits2 = []
 
-                    def update_game_status(self):
-                        """Oyun bitip bitmediğini kontrol et"""
-                        if self.check_win(player_board):
-                            self.game_over = True
-                            self.winner = "Player"
-                        elif self.check_win(computer_board):
-                            self.game_over = True
-                            self.winner = "Computer"
+        for u in unknown:
+            if u + 1 in hits or u - 1 in hits or u - 10 in hits or u + 10 in hits:
+                unknown_with_neighboring_hits1.append(u)
+            if u + 2 in hits or u - 2 in hits or u - 20 in hits or u + 20 in hits:
+                unknown_with_neighboring_hits2.append(u)
 
-    # Ekrana çizim
-    game.draw_grid(player_board, 50, 50)  # Oyuncu tahtası
-    game.draw_grid(computer_board, 50 + GRID_SIZE * SQUARE_SIZE + 50, 50)  # Bilgisayar tahtası
+        for u in unknown:
+            if u in unknown_with_neighboring_hits1 and u in unknown_with_neighboring_hits2:
+                self.make_move(u)
+                return
 
-    pygame.display.flip()
+        if unknown_with_neighboring_hits1:
+            self.make_move(random.choice(unknown_with_neighboring_hits1))
+            return
 
-pygame.quit()
+        checker_board = []
+        for u in unknown:
+            row = u // 10
+            col = u % 10
+            if (row + col) % 2 == 0:
+                checker_board.append(u)
+        if checker_board:
+            self.make_move(random.choice(checker_board))
+            return
+
+        self.random_ai()
