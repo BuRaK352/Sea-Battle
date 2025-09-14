@@ -100,4 +100,4 @@ def finalize_log(log_data, winner):
             logs = []
     logs.append(log_data)
     with open(combined_file, "w", encoding="utf-8") as f:
-        json.dump(logs, f, indent=2)
+        json.dump(logs,f,indent=2)

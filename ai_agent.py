@@ -9,7 +9,7 @@ import random
 import matplotlib.pyplot as plt
 
 class QLearningAgent:
-    def __init__(
+    def _init_(
         self, user_id, alpha=0.3, gamma=0.9, epsilon=0.5,
         min_epsilon=0.05, decay=0.99, model_filename="qtable.pkl"
     ):
@@ -282,4 +282,4 @@ class QLearningAgent:
         plt.tight_layout()
         plt.savefig(save_path)
         plt.close()
-        print(f"Yeni heatmap oluşturuldu: {save_path}")
+        print(f"Yeni heatmap oluşturuldu:{save_path}")

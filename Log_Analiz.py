@@ -121,7 +121,7 @@ def user_specific(df_moves, df_ships, user_id):
     plot_heatmap(dm, title=f'Heatmap Moves - User {user_id}', save_path=f"user_{user_id}_heatmap.png")
     plot_ship_placement(ds, save_path=f"user_{user_id}_ships.png")
     for size in sorted(ds['size'].unique()):
-        plot_ship_placement(ds, size, save_path=f"user_{user_id}_ships_size_{size}.png")
+        plot_ship_placement(ds, size, save_path=f"user_{user_id}ships_size{size}.png")
 
 def compute_overall_stats(root_dir=LOGS_DIR):
     df_moves, df_ships = load_logs(root_dir)

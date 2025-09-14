@@ -117,8 +117,8 @@ def draw_statistics_panel(game):
     ANALYSIS_BUTTONS.clear()
     labels = [
         ("Atış Sayısı", "plot_avg_turns.png"),
-        ("Heatmap Q-table", "plot_qtable_heatmap.png"),
-        ("Heatmap allships", "plot_heatmap_ships.png")
+        ("Isı Haritası", "plot_qtable_heatmap.png"),
+        ("Gemi Yerleşimi", "plot_heatmap_ships.png")
     ]
     b_y = panel_y + line_spacing * 7
     button_width, button_height = 160, 40
@@ -273,27 +273,28 @@ def run_menu():
     clock = pygame.time.Clock()
     menu_background = pygame.image.load("menu_background.jpg")
     while show_menu:
+
         SCREEN.blit(menu_background, (0, 0))
-        pvp_button = pygame.Rect(SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 - 130, 250, 60)
         AI_vs_Player = pygame.Rect(SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 - 50, 250, 60)
-        AI_vs_AI = pygame.Rect(SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 - 210, 250, 60)
+        AI_vs_AI = pygame.Rect(SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 - 130, 250, 60)
         quit_button = pygame.Rect(SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 + 30, 250, 60)
 
         draw_button("AI vs AI", AI_vs_AI, GREEN, WHITE)
         draw_button("AI vs Player", AI_vs_Player, BLUE, WHITE)
         draw_button("Quit Game", quit_button, RED, WHITE)
-        draw_button("Player vs Player", pvp_button, GREEN, WHITE)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    pygame.quit()
+                    sys.exit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 mx, my = pygame.mouse.get_pos()
                 if AI_vs_Player.collidepoint((mx, my)):
                     return False, True
-                elif pvp_button.collidepoint((mx, my)):
-                    return True, True
                 elif AI_vs_AI.collidepoint((mx, my)):
                     return False, False
                 elif quit_button.collidepoint((mx, my)):
@@ -302,6 +303,7 @@ def run_menu():
 
         pygame.display.flip()
         clock.tick(60)
+
 
 HUMAN1, HUMAN2 = run_menu()
 game = Game(HUMAN1, HUMAN2)
@@ -337,13 +339,13 @@ while running:
                     if label == "Atış Sayısı":
                         plot_average_turns(df_moves)
                         GRAPH_IMAGE = "plot_avg_turns.png"
-                    elif label == "Heatmap allships":
+                    elif label == "Gemi Yerleşimi":
                         plot_ship_placement(df_ships, save_path="plot_heatmap_ships.png")
                         GRAPH_IMAGE = "plot_heatmap_ships.png"
 
 
 
-                    elif label == "Heatmap Q-table":
+                    elif label == "Isı Haritası":
 
                         # Eski heatmap'i sil
 
@@ -366,7 +368,8 @@ while running:
 
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
-                running = False
+                HUMAN1, HUMAN2 = run_menu()
+                game = Game(HUMAN1, HUMAN2)
             if event.key == pygame.K_SPACE:
                 pausing = not pausing
             if event.key == pygame.K_RETURN:
@@ -403,5 +406,5 @@ while running:
                 textbox = myfont.render(text, False, GRAY, WHITE)
                 SCREEN.blit(textbox, (WIDTH // 2 - 240, HEIGHT // 2 - 50))
 
-        pygame.time.wait(100)
+        pygame.time.wait(1)
         pygame.display.flip()

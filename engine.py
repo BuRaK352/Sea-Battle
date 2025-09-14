@@ -3,7 +3,7 @@ import random
 from log_helper import create_log_data, add_move, finalize_log, set_username
 
 class Ship:
-    def __init__(self, size):
+    def _init_(self, size):
         self.size = size
         self.orientation = random.choice(["v", "h"])
         self.row = random.randrange(0, 10)
@@ -21,7 +21,7 @@ class Ship:
             return [(self.row + i) * 10 + self.col for i in range(self.size)]
 
 class Player:
-    def __init__(self, human=False):
+    def _init_(self, human=False):
         self.human = human
         self.ships = []
         self.search = ["U"] * 100
@@ -45,7 +45,7 @@ class Player:
                 placed = True
 
 class Game:
-    def __init__(self, human1=False, human2=False, username=None):
+    def _init_(self, human1=False, human2=False, username=None):
         # Kullanıcı adı verildiyse set et
         if username:
             set_username(username)
